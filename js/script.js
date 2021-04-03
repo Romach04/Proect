@@ -38,12 +38,12 @@ window.addEventListener('DOMContentLoaded', ()=>{
 //time
 const deadline = '2021-04-04';
 
-function getTimeRemaining(endtime) {
-    const t = Date.parse(endtime) - Date.parse(new Date()),
-        days = Math.floor( (t/(1000*60*60*24)) ),
-        seconds = Math.floor( (t/1000) % 60 ),
-        minutes = Math.floor( (t/1000/60) % 60 ),
-        hours = Math.floor( (t/(1000*60*60) % 24) );
+    function getTimeRemaining(endtime) {
+        const t = Date.parse(endtime) - Date.parse(new Date()),
+            days = Math.floor( (t/(1000*60*60*24)) ),
+            seconds = Math.floor( (t/1000) % 60 ),
+            minutes = Math.floor( (t/1000/60) % 60 ),
+            hours = Math.floor( (t/(1000*60*60) % 24) );
 
     return {
         'total': t,
@@ -51,18 +51,18 @@ function getTimeRemaining(endtime) {
         'hours': hours,
         'minutes': minutes,
         'seconds': seconds
-    };
-}
-
-function getZero(num){
-    if (num >= 0 && num < 10) { 
-        return '0' + num;
-    } else {
-        return num;
+        };
     }
-}
 
-function setClock(selector, endtime) {
+    function getZero(num){
+        if (num > 0 && num < 10) { 
+            return '0' + num;
+        } else {
+            return num;
+        }
+    }
+
+    function setClock(selector, endtime) {
 
     const timer = document.querySelector(selector),
         days = timer.querySelector("#days"),
@@ -88,7 +88,56 @@ function setClock(selector, endtime) {
     }
 }
 
-setClock('.timer', deadline);
+    setClock('.timer', deadline);
+
+//Modal
+
+    const modalTriger = document.querySelectorAll('[data-modal]'),
+          modal = document.querySelector('.modal'),
+          modalCloseBtn = document.querySelector('[data-close]');
+
+
+    function openModal(){
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
+    }
+    
+    modalTriger.forEach(btn => {
+        btn.addEventListener('click', openModal);
+    });
+    function closeModal(){
+        modal.classList.add('hide');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    modalCloseBtn.addEventListener('click', closeModal);
+        
+
+    modal.addEventListener('click', (e)=>{
+        if (e.target == modal){
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e)=>{
+        if (e.code === 'Escape' && modal.classList.contains('show')){
+            closeModal();
+        }
+    });
+
+    const modalTimerId = setTimeout(openModal, 3000);
+
+    function showModalByScroll(){
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight){
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        }
+    }
+
+    window.addEventListener('scroll', showModalByScroll);
+
 
 });
 
